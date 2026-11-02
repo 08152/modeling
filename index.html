@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini Blender</title>
+<title>Mini Blender 3D</title>
 
 <style>
 * {
@@ -14,250 +14,193 @@
 }
 
 body {
-    background: #202126;
-    color: #eeeeee;
     font-family: Arial, sans-serif;
+    background: #202124;
+    color: white;
     overflow: hidden;
 }
 
-button, input, select {
-    background: #383b43;
-    color: white;
-    border: 1px solid #51545e;
-    border-radius: 4px;
-    padding: 7px;
-}
-
-button {
-    cursor: pointer;
-    transition: .15s;
-}
-
-button:hover {
-    background: #555a65;
-}
-
-button.active {
-    background: #d8782e;
-    border-color: #f59a50;
-}
-
 #app {
-    width: 100vw;
     height: 100vh;
-    display: grid;
-    grid-template-rows: 45px 42px 1fr 25px;
+    display: flex;
+    flex-direction: column;
 }
 
-/* TOPBAR */
+/* OBERE LEISTE */
 
 #topbar {
-    background: #303239;
+    height: 48px;
+    background: #303236;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 0 12px;
-    border-bottom: 1px solid #151619;
-}
-
-.logo {
-    font-weight: bold;
-    color: #ff9845;
-    font-size: 18px;
-    margin-right: 15px;
-}
-
-.menu {
-    position: relative;
-}
-
-.menu button {
-    border: none;
-    background: transparent;
-}
-
-/* TOOLBAR */
-
-#toolbar {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    background: #292b31;
+    gap: 18px;
+    padding: 0 15px;
     border-bottom: 1px solid #111;
 }
 
-.separator {
-    height: 25px;
-    width: 1px;
-    background: #555;
-    margin: 0 5px;
+.logo {
+    font-size: 19px;
+    font-weight: bold;
+    color: #ff9b38;
 }
 
-/* MAIN */
+.top-button {
+    background: #414449;
+    color: white;
+    border: 1px solid #555;
+    padding: 7px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.top-button:hover {
+    background: #60646a;
+}
+
+/* HAUPTBEREICH */
 
 #main {
+    flex: 1;
+    display: flex;
     min-height: 0;
-    display: grid;
-    grid-template-columns: 190px 1fr 260px;
 }
 
-/* LEFT PANEL */
+/* LINKES MENÜ */
 
 #left {
-    background: #292b31;
-    padding: 10px;
-    overflow-y: auto;
+    width: 210px;
+    background: #292b2f;
     border-right: 1px solid #111;
+    padding: 12px;
+    overflow-y: auto;
 }
 
 .panel-title {
-    font-size: 12px;
-    color: #ff9845;
+    font-size: 13px;
     font-weight: bold;
+    color: #aaa;
     margin: 12px 0 8px;
     text-transform: uppercase;
 }
 
-.full {
+.tool-button {
     width: 100%;
-    margin-bottom: 5px;
+    background: #3b3e43;
+    color: white;
+    border: 1px solid #50545a;
+    padding: 10px;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
 }
 
-.grid-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
+.tool-button:hover {
+    background: #555a61;
 }
 
-/* VIEWPORT */
+.tool-button.active {
+    background: #bd702b;
+}
+
+#objectList {
+    margin-top: 8px;
+}
+
+.object-item {
+    padding: 9px;
+    margin-bottom: 4px;
+    background: #373a3f;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.object-item:hover {
+    background: #50545a;
+}
+
+.object-item.selected {
+    background: #87501f;
+}
+
+/* 3D VIEWPORT */
 
 #viewport {
-    position: relative;
+    flex: 1;
     min-width: 0;
     min-height: 0;
-    background: #202126;
+    position: relative;
+    overflow: hidden;
+    background: #34383e;
 }
 
 #viewport canvas {
     display: block;
     width: 100%;
     height: 100%;
+    outline: none;
 }
 
-#viewinfo {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: #16171bcc;
-    padding: 8px;
-    border-radius: 5px;
-    pointer-events: none;
-    color: #ccc;
-    font-size: 12px;
-}
-
-#viewmode {
-    position: absolute;
-    right: 12px;
-    top: 12px;
-    display: flex;
-    gap: 5px;
-}
-
-/* RIGHT PANEL */
+/* RECHTES MENÜ */
 
 #right {
-    background: #292b31;
+    width: 245px;
+    background: #292b2f;
     border-left: 1px solid #111;
-    overflow-y: auto;
     padding: 12px;
-}
-
-.section {
-    border-bottom: 1px solid #41434a;
-    padding-bottom: 12px;
-    margin-bottom: 12px;
+    overflow-y: auto;
 }
 
 label {
     display: block;
-    font-size: 12px;
     color: #bbb;
-    margin: 8px 0 4px;
+    font-size: 12px;
+    margin: 10px 0 4px;
 }
 
-input[type="range"] {
+input, select {
     width: 100%;
-    padding: 0;
-}
-
-input[type="number"] {
-    width: 100%;
+    padding: 8px;
+    background: #191a1d;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
 }
 
 input[type="color"] {
-    width: 100%;
-    height: 35px;
-    padding: 2px;
+    height: 38px;
+    padding: 3px;
 }
 
-select {
-    width: 100%;
+input[type="range"] {
+    padding: 0;
 }
 
-.tool-row {
-    display: flex;
-    gap: 5px;
+hr {
+    border: 0;
+    border-top: 1px solid #444;
+    margin: 15px 0;
 }
 
-.tool-row button {
-    flex: 1;
-}
-
-#objectList {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.object-item {
-    padding: 8px;
-    background: #393c44;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-.object-item.selected {
-    background: #a85d29;
-}
-
-/* FOOTER */
+/* UNTERE LEISTE */
 
 #footer {
-    background: #303239;
+    height: 30px;
+    background: #303236;
+    border-top: 1px solid #111;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
-    font-size: 11px;
+    padding: 0 12px;
     color: #aaa;
+    font-size: 12px;
+    justify-content: space-between;
 }
 
-.hidden {
-    display: none !important;
+#message {
+    color: #ffbd77;
 }
 
-@media(max-width: 850px) {
-    #main {
-        grid-template-columns: 145px 1fr;
-    }
-
-    #right {
-        display: none;
-    }
-}
 </style>
 </head>
 
@@ -265,364 +208,148 @@ select {
 
 <div id="app">
 
-<!-- ===================================== -->
-<!-- TOPBAR -->
-<!-- ===================================== -->
+    <header id="topbar">
+        <div class="logo">MINI BLENDER</div>
 
-<header id="topbar">
+        <button class="top-button" onclick="addCube()">Würfel</button>
+        <button class="top-button" onclick="addSphere()">Kugel</button>
+        <button class="top-button" onclick="addCylinder()">Zylinder</button>
 
-    <div class="logo">MINI BLENDER</div>
+        <button class="top-button" onclick="exportGLB()">GLB Export</button>
+    </header>
 
-    <div class="menu">
-        <button onclick="showPanel('objects')">Datei</button>
-    </div>
+    <main id="main">
 
-    <div class="menu">
-        <button onclick="showPanel('objects')">Objekt</button>
-    </div>
+        <!-- LINKES MENÜ -->
 
-    <div class="menu">
-        <button onclick="setMode('object')">Modus</button>
-    </div>
+        <aside id="left">
 
-    <div class="menu">
-        <button onclick="exportGLB()">Export GLB</button>
-    </div>
+            <div class="panel-title">Erstellen</div>
 
-    <div class="menu">
-        <button onclick="exportGLTF()">Export GLTF</button>
-    </div>
+            <button class="tool-button" onclick="addCube()">＋ Würfel</button>
+            <button class="tool-button" onclick="addSphere()">＋ Kugel</button>
+            <button class="tool-button" onclick="addCylinder()">＋ Zylinder</button>
+            <button class="tool-button" onclick="addPlane()">＋ Fläche</button>
 
-    <span style="flex:1"></span>
+            <hr>
 
-    <span id="status">Bereit</span>
+            <div class="panel-title">Werkzeuge</div>
 
-</header>
+            <button class="tool-button active" id="objectModeButton"
+                onclick="setObjectMode()">Objekt-Modus</button>
 
-<!-- ===================================== -->
-<!-- TOOLBAR -->
-<!-- ===================================== -->
+            <button class="tool-button" id="sculptModeButton"
+                onclick="setSculptMode()">Modellieren</button>
 
-<div id="toolbar">
+            <button class="tool-button" id="paintModeButton"
+                onclick="setPaintMode()">Malen</button>
 
-    <button onclick="addCube()">＋ Würfel</button>
-    <button onclick="addSphere()">＋ Kugel</button>
-    <button onclick="addCylinder()">＋ Zylinder</button>
+            <button class="tool-button" onclick="focusSelectedObject()">
+                Ansicht auf Objekt
+            </button>
 
-    <div class="separator"></div>
+            <hr>
 
-    <button onclick="setTransform('move')">Verschieben</button>
-    <button onclick="setTransform('rotate')">Drehen</button>
-    <button onclick="setTransform('scale')">Skalieren</button>
+            <div class="panel-title">Objekte</div>
+            <div id="objectList"></div>
 
-    <div class="separator"></div>
+        </aside>
 
-    <button onclick="setMode('object')" id="modeObject" class="active">Objekt</button>
-    <button onclick="setMode('sculpt')" id="modeSculpt">Sculpt</button>
-    <button onclick="setMode('paint')" id="modePaint">Malen</button>
+        <!-- 3D BEREICH -->
 
-    <div class="separator"></div>
+        <section id="viewport"></section>
 
-    <button onclick="duplicateObject()">Duplizieren</button>
-    <button onclick="deleteObject()">Löschen</button>
+        <!-- RECHTES MENÜ -->
 
-</div>
+        <aside id="right">
 
-<!-- ===================================== -->
-<!-- MAIN -->
-<!-- ===================================== -->
+            <div class="panel-title">Objekteigenschaften</div>
 
-<div id="main">
+            <label>Name</label>
+            <input id="objectName" type="text" placeholder="Objektname"
+                onchange="renameSelected(this.value)">
 
-<!-- ===================================== -->
-<!-- LEFT PANEL -->
-<!-- ===================================== -->
-
-<aside id="left">
-
-    <div class="panel-title">Objekte erstellen</div>
-
-    <div class="grid-buttons">
-        <button onclick="addCube()">Würfel</button>
-        <button onclick="addSphere()">Kugel</button>
-        <button onclick="addCylinder()">Zylinder</button>
-        <button onclick="addPlane()">Ebene</button>
-    </div>
-
-    <div class="panel-title">Modellieren</div>
-
-    <button class="full" onclick="setTransform('move')">↔ Verschieben</button>
-    <button class="full" onclick="setTransform('rotate')">⟳ Drehen</button>
-    <button class="full" onclick="setTransform('scale')">⤢ Skalieren</button>
-
-    <div class="panel-title">Sculpting</div>
-
-    <button class="full" onclick="setMode('sculpt')">Sculpt-Modus starten</button>
-
-    <div class="panel-title">Texture Paint</div>
-
-    <button class="full" onclick="setMode('paint')">Malmodus starten</button>
-
-    <div class="panel-title">Objekte</div>
-
-    <div id="objectList"></div>
-
-</aside>
-
-<!-- ===================================== -->
-<!-- VIEWPORT -->
-<!-- ===================================== -->
-
-<main id="viewport">
-
-    <div id="viewinfo">
-        MINI BLENDER 3D VIEWPORT<br>
-        Linke Maustaste: Auswählen<br>
-        Mausrad: Zoomen<br>
-        Rechte Maustaste: Kamera drehen
-    </div>
-
-    <div id="viewmode">
-        <button onclick="focusSelectedObject()">Ansicht auf Auswahl</button>
-    </div>
-
-</main>
-
-<!-- ===================================== -->
-<!-- RIGHT PANEL -->
-<!-- ===================================== -->
-
-<aside id="right">
-
-    <!-- OBJECT PROPERTIES -->
-
-    <div id="objectPanel">
-
-        <div class="panel-title">Objekteigenschaften</div>
-
-        <label>Objektname</label>
-        <input id="objectName" type="text" placeholder="Objektname"
-        onchange="renameSelected(this.value)">
-
-        <div class="section">
+            <hr>
 
             <div class="panel-title">Position</div>
 
             <label>X</label>
-            <input type="number" id="posX" value="0" step="0.1"
-            onchange="updateTransform()">
+            <input id="posX" type="number" step="0.1" value="0"
+                onchange="updateTransform()">
 
             <label>Y</label>
-            <input type="number" id="posY" value="0" step="0.1"
-            onchange="updateTransform()">
+            <input id="posY" type="number" step="0.1" value="0"
+                onchange="updateTransform()">
 
             <label>Z</label>
-            <input type="number" id="posZ" value="0" step="0.1"
-            onchange="updateTransform()">
+            <input id="posZ" type="number" step="0.1" value="0"
+                onchange="updateTransform()">
 
-        </div>
+            <hr>
 
-        <div class="section">
-
-            <div class="panel-title">Rotation (Grad)</div>
+            <div class="panel-title">Rotation</div>
 
             <label>X</label>
-            <input type="number" id="rotX" value="0"
-            onchange="updateTransform()">
+            <input id="rotX" type="number" step="1" value="0"
+                onchange="updateTransform()">
 
             <label>Y</label>
-            <input type="number" id="rotY" value="0"
-            onchange="updateTransform()">
+            <input id="rotY" type="number" step="1" value="0"
+                onchange="updateTransform()">
 
             <label>Z</label>
-            <input type="number" id="rotZ" value="0"
-            onchange="updateTransform()">
+            <input id="rotZ" type="number" step="1" value="0"
+                onchange="updateTransform()">
 
-        </div>
+            <hr>
 
-        <div class="section">
-
-            <div class="panel-title">Skalierung</div>
+            <div class="panel-title">Größe</div>
 
             <label>X</label>
-            <input type="number" id="scaleX" value="1" step="0.1"
-            onchange="updateTransform()">
+            <input id="scaleX" type="number" step="0.1" value="1"
+                onchange="updateTransform()">
 
             <label>Y</label>
-            <input type="number" id="scaleY" value="1" step="0.1"
-            onchange="updateTransform()">
+            <input id="scaleY" type="number" step="0.1" value="1"
+                onchange="updateTransform()">
 
             <label>Z</label>
-            <input type="number" id="scaleZ" value="1" step="0.1"
-            onchange="updateTransform()">
+            <input id="scaleZ" type="number" step="0.1" value="1"
+                onchange="updateTransform()">
 
-            <button class="full" onclick="resetTransform()">Zurücksetzen</button>
-
-        </div>
-
-        <div class="section">
+            <hr>
 
             <div class="panel-title">Farbe</div>
 
-            <input type="color" id="objectColor" value="#999999"
-            onchange="changeObjectColor(this.value)">
+            <input id="objectColor" type="color" value="#ff9900"
+                onchange="changeObjectColor(this.value)">
 
-        </div>
-
-    </div>
-
-    <!-- SCULPT PANEL -->
-
-    <div id="sculptPanel" class="hidden">
-
-        <div class="panel-title">Sculpting</div>
-
-        <label>Pinselart</label>
-
-        <select id="sculptBrush" onchange="sculptTools.setBrush(this.value)">
-            <option value="DRAW">Draw – Aufbauen</option>
-            <option value="DRAW_SHARP">Draw Sharp</option>
-            <option value="CLAY">Clay – Ton</option>
-            <option value="CLAY_STRIPS">Clay Strips</option>
-            <option value="INFLATE">Inflate – Aufblähen</option>
-            <option value="DEFLATE">Deflate – Eindrücken</option>
-            <option value="SMOOTH">Smooth – Glätten</option>
-            <option value="FLATTEN">Flatten – Abflachen</option>
-            <option value="PINCH">Pinch – Zusammenziehen</option>
-            <option value="GRAB">Grab – Verschieben</option>
-            <option value="CREASE">Crease – Furchen</option>
-            <option value="BLOB">Blob</option>
-            <option value="SCRAPE">Scrape – Abschaben</option>
-            <option value="LAYER">Layer – Schichten</option>
-            <option value="FILL">Fill – Auffüllen</option>
-        </select>
-
-        <label>Pinselgröße</label>
-        <input type="range" min="0.02" max="2" step="0.01"
-        value="0.35" oninput="sculptTools.setRadius(this.value)">
-
-        <label>Pinselstärke</label>
-        <input type="range" min="0" max="1" step="0.01"
-        value="0.35" oninput="sculptTools.setStrength(this.value)">
-
-        <label>Glättungsstärke</label>
-        <input type="range" min="0" max="1" step="0.01"
-        value="0.5" oninput="sculptTools.settings.smoothStrength=Number(this.value)">
-
-        <label>Pinselabstand</label>
-        <input type="range" min="0.01" max="1" step="0.01"
-        value="0.15" oninput="sculptTools.setSpacing(this.value)">
-
-        <label>Druck</label>
-        <input type="range" min="0" max="1" step="0.01"
-        value="1" oninput="sculptTools.setPressure(this.value)">
-
-        <div class="section">
-
-            <div class="panel-title">Symmetrie</div>
-
-            <label><input type="checkbox"
-            onchange="sculptTools.setSymmetry('x',this.checked)"> X</label>
-
-            <label><input type="checkbox"
-            onchange="sculptTools.setSymmetry('y',this.checked)"> Y</label>
-
-            <label><input type="checkbox"
-            onchange="sculptTools.setSymmetry('z',this.checked)"> Z</label>
-
-        </div>
-
-        <button class="full" onclick="sculptTools.settings.invert=!sculptTools.settings.invert">
-            Aufbauen / Abtragen umschalten
-        </button>
-
-    </div>
-
-    <!-- PAINT PANEL -->
-
-    <div id="paintPanel" class="hidden">
-
-        <div class="panel-title">Texture Painting</div>
-
-        <label>Pinselart</label>
-
-        <select id="paintBrush" onchange="paintTools.setBrush(this.value)">
-            <option value="BRUSH">Normaler Pinsel</option>
-            <option value="SOFT">Weicher Pinsel</option>
-            <option value="HARD">Harter Pinsel</option>
-            <option value="AIRBRUSH">Airbrush</option>
-            <option value="SPRAY">Sprühdose</option>
-            <option value="ERASER">Radiergummi</option>
-            <option value="BLUR">Weichzeichner</option>
-            <option value="PIXEL">Pixelpinsel</option>
-            <option value="MARKER">Marker</option>
-            <option value="FILL">Fülleimer</option>
-        </select>
-
-        <label>Farbe</label>
-        <input type="color" value="#ff6600"
-        onchange="paintTools.setColor(this.value)">
-
-        <label>Pinselgröße</label>
-        <input type="range" min="1" max="150" value="24"
-        oninput="paintTools.setSize(this.value)">
-
-        <label>Stärke</label>
-        <input type="range" min="0" max="1" step="0.01" value="1"
-        oninput="paintTools.setStrength(this.value)">
-
-        <label>Härte</label>
-        <input type="range" min="0" max="1" step="0.01" value="0.7"
-        oninput="paintTools.setHardness(this.value)">
-
-        <label>Deckkraft</label>
-        <input type="range" min="0" max="1" step="0.01" value="1"
-        oninput="paintTools.setOpacity(this.value)">
-
-        <div class="section">
-
-            <div class="panel-title">Textur</div>
-
-            <button class="full" onclick="
-                if(selectedObject) paintTools.createTexture(selectedObject);
-            ">Neue Textur erstellen</button>
-
-            <button class="full" onclick="paintTools.exportTexture()">
-                PNG exportieren
+            <button class="tool-button" onclick="deleteSelected()">
+                Objekt löschen
             </button>
 
-            <button class="full" onclick="paintTools.clearTexture()">
-                Textur leeren
+            <button class="tool-button" onclick="duplicateSelected()">
+                Objekt duplizieren
             </button>
 
-        </div>
+        </aside>
 
-    </div>
+    </main>
 
-</aside>
+    <footer id="footer">
+        <span>Mini Blender 3D</span>
+        <span id="message">Wird geladen ...</span>
+    </footer>
 
 </div>
 
-<!-- FOOTER -->
+<!-- THREE.JS UND ERWEITERUNGEN -->
 
-<footer id="footer">
-    <span>Mini Blender 1.0</span>
-    <span id="footerStatus">3D Engine wird gestartet...</span>
-</footer>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/exporters/GLTFExporter.js"></script>
 
-</div>
-
-<!-- ===================================== -->
-<!-- THREE.JS -->
-<!-- ===================================== -->
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.159.0/examples/js/controls/OrbitControls.js"></script>
-
-<!-- ===================================== -->
-<!-- MODULE -->
-<!-- ===================================== -->
+<!-- EIGENE DATEIEN -->
 
 <script src="modelieren.js"></script>
 <script src="malen.js"></script>
@@ -631,84 +358,64 @@ select {
 <script src="3-D.js"></script>
 <script src="verbindung.js"></script>
 
-<!-- ===================================== -->
-<!-- APP -->
-<!-- ===================================== -->
-
 <script>
 
-// ==========================================
-// START
-// ==========================================
+/* =====================================
+   START
+===================================== */
 
-window.addEventListener("load", () => {
+window.addEventListener("load", function() {
 
     try {
 
+        if (!window.THREE) {
+            throw new Error("Three.js konnte nicht geladen werden.");
+        }
+
+        if (!THREE.OrbitControls) {
+            throw new Error("OrbitControls konnte nicht geladen werden.");
+        }
+
+        if (typeof start3D !== "function") {
+            throw new Error("3-D.js wurde nicht richtig geladen.");
+        }
+
         start3D();
 
-        connectMiniBlender();
+        if (typeof connectMiniBlender === "function") {
+            connectMiniBlender();
+        }
 
-        setTimeout(updateObjectList, 100);
+        updateObjectList();
 
-        document.getElementById("status").textContent = "Bereit";
-        document.getElementById("footerStatus").textContent =
-            "Mini Blender gestartet";
+        document.getElementById("message").textContent =
+            "3D-Editor bereit";
 
     } catch(error) {
 
+        document.getElementById("message").textContent =
+            "Fehler: " + error.message;
+
         console.error(error);
 
-        document.getElementById("status").textContent =
-            "Fehler beim Start";
-
-        document.getElementById("footerStatus").textContent =
-            error.message;
     }
 
 });
 
-// ==========================================
-// OBJEKTE
-// ==========================================
 
-function addCube() {
-    modelTools.addCube();
-    updateObjectList();
-    updateProperties();
-}
-
-function addSphere() {
-    modelTools.addSphere();
-    updateObjectList();
-    updateProperties();
-}
-
-function addCylinder() {
-    modelTools.addCylinder();
-    updateObjectList();
-    updateProperties();
-}
-
-function addPlane() {
-    modelTools.addPlane();
-    updateObjectList();
-    updateProperties();
-}
-
-// ==========================================
-// OBJEKTLISTE
-// ==========================================
+/* =====================================
+   OBJEKTLISTE
+===================================== */
 
 function updateObjectList() {
 
-    if (!window.scene) return;
-
     const list = document.getElementById("objectList");
+
+    if (!window.scene) return;
 
     list.innerHTML = "";
 
-    scene.children.forEach(object => {
+    scene.children.forEach(function(object) {
 
         if (!object.userData.isModelObject) return;
 
@@ -716,41 +423,49 @@ function updateObjectList() {
 
         item.className = "object-item";
 
-        if (object === selectedObject) {
+        if (window.selectedObject === object) {
             item.classList.add("selected");
         }
 
-        item.textContent = "◈ " + object.name;
+        item.textContent = object.name || "Objekt";
 
-        item.onclick = () => {
+        item.onclick = function() {
 
-            viewportEngine.selectObject(object);
+            if (window.viewportEngine) {
+                viewportEngine.selectObject(object);
+            }
 
-            updateProperties();
             updateObjectList();
+            updateProperties(object);
 
         };
 
         list.appendChild(item);
 
     });
+
 }
 
-// ==========================================
-// EIGENSCHAFTEN
-// ==========================================
 
-function updateProperties() {
+/* =====================================
+   EIGENSCHAFTEN
+===================================== */
 
-    const object = selectedObject;
+function updateProperties(object) {
 
     if (!object) return;
 
-    document.getElementById("objectName").value = object.name;
+    document.getElementById("objectName").value =
+        object.name || "";
 
-    document.getElementById("posX").value = object.position.x.toFixed(3);
-    document.getElementById("posY").value = object.position.y.toFixed(3);
-    document.getElementById("posZ").value = object.position.z.toFixed(3);
+    document.getElementById("posX").value =
+        object.position.x.toFixed(2);
+
+    document.getElementById("posY").value =
+        object.position.y.toFixed(2);
+
+    document.getElementById("posZ").value =
+        object.position.z.toFixed(2);
 
     document.getElementById("rotX").value =
         THREE.MathUtils.radToDeg(object.rotation.x).toFixed(1);
@@ -761,181 +476,250 @@ function updateProperties() {
     document.getElementById("rotZ").value =
         THREE.MathUtils.radToDeg(object.rotation.z).toFixed(1);
 
-    document.getElementById("scaleX").value = object.scale.x.toFixed(3);
-    document.getElementById("scaleY").value = object.scale.y.toFixed(3);
-    document.getElementById("scaleZ").value = object.scale.z.toFixed(3);
+    document.getElementById("scaleX").value =
+        object.scale.x.toFixed(2);
 
-    const material = Array.isArray(object.material)
-        ? object.material[0]
-        : object.material;
+    document.getElementById("scaleY").value =
+        object.scale.y.toFixed(2);
 
-    if (material && material.color) {
-        document.getElementById("objectColor").value =
-            "#" + material.color.getHexString();
-    }
+    document.getElementById("scaleZ").value =
+        object.scale.z.toFixed(2);
+
 }
 
-// ==========================================
-// TRANSFORM
-// ==========================================
+
+/* =====================================
+   TRANSFORMIEREN
+===================================== */
 
 function updateTransform() {
 
-    if (!selectedObject) return;
+    const object = window.selectedObject;
 
-    modelTools.move(
-        Number(posX.value),
-        Number(posY.value),
-        Number(posZ.value)
+    if (!object) return;
+
+    const value = id =>
+        parseFloat(document.getElementById(id).value) || 0;
+
+    object.position.set(
+        value("posX"),
+        value("posY"),
+        value("posZ")
     );
 
-    modelTools.rotate(
-        Number(rotX.value),
-        Number(rotY.value),
-        Number(rotZ.value)
+    object.rotation.set(
+        THREE.MathUtils.degToRad(value("rotX")),
+        THREE.MathUtils.degToRad(value("rotY")),
+        THREE.MathUtils.degToRad(value("rotZ"))
     );
 
-    modelTools.scale(
-        Number(scaleX.value),
-        Number(scaleY.value),
-        Number(scaleZ.value)
+    object.scale.set(
+        Math.max(0.001, value("scaleX")),
+        Math.max(0.001, value("scaleY")),
+        Math.max(0.001, value("scaleZ"))
     );
 
-    viewportEngine.updateSelectionHelper();
 }
 
-function resetTransform() {
 
-    if (!selectedObject) return;
+/* =====================================
+   FARBE
+===================================== */
 
-    selectedObject.position.set(0, 0.5, 0);
-    selectedObject.rotation.set(0, 0, 0);
-    selectedObject.scale.set(1, 1, 1);
+function changeObjectColor(color) {
 
-    updateProperties();
-    viewportEngine.updateSelectionHelper();
+    const object = window.selectedObject;
+
+    if (!object || !object.material) return;
+
+    const materials = Array.isArray(object.material)
+        ? object.material
+        : [object.material];
+
+    materials.forEach(function(material) {
+
+        if (material.color) {
+            material.color.set(color);
+        }
+
+    });
+
 }
+
+
+/* =====================================
+   OBJEKTNAME
+===================================== */
 
 function renameSelected(name) {
 
-    if (!selectedObject) return;
+    const object = window.selectedObject;
 
-    modelTools.rename(name);
+    if (!object) return;
+
+    object.name = name || "Objekt";
+
     updateObjectList();
+
 }
 
-function changeObjectColor(color) {
-    modelTools.setColor(color);
+
+/* =====================================
+   OBJEKTE
+===================================== */
+
+function addCube() {
+
+    if (!window.modelTools) return;
+
+    const object = modelTools.addCube();
+
+    if (object) {
+        updateObjectList();
+        updateProperties(object);
+    }
+
 }
 
-// ==========================================
-// MODI
-// ==========================================
+function addSphere() {
 
-function setMode(mode) {
+    if (!window.modelTools) return;
 
-    document.getElementById("objectPanel").classList.toggle(
-        "hidden", mode !== "object"
-    );
+    const object = modelTools.addSphere();
 
-    document.getElementById("sculptPanel").classList.toggle(
-        "hidden", mode !== "sculpt"
-    );
+    if (object) {
+        updateObjectList();
+        updateProperties(object);
+    }
 
-    document.getElementById("paintPanel").classList.toggle(
-        "hidden", mode !== "paint"
-    );
+}
 
-    document.getElementById("modeObject").classList.toggle(
-        "active", mode === "object"
-    );
+function addCylinder() {
 
-    document.getElementById("modeSculpt").classList.toggle(
-        "active", mode === "sculpt"
-    );
+    if (!window.modelTools) return;
 
-    document.getElementById("modePaint").classList.toggle(
-        "active", mode === "paint"
-    );
+    const object = modelTools.addCylinder();
 
-    if (mode === "object") {
+    if (object) {
+        updateObjectList();
+        updateProperties(object);
+    }
+
+}
+
+function addPlane() {
+
+    if (!window.modelTools) return;
+
+    const object = modelTools.addPlane();
+
+    if (object) {
+        updateObjectList();
+        updateProperties(object);
+    }
+
+}
+
+
+/* =====================================
+   LÖSCHEN / DUPLIZIEREN
+===================================== */
+
+function deleteSelected() {
+
+    if (!window.selectedObject) return;
+
+    if (window.modelTools) {
+        modelTools.deleteSelected();
+    } else {
+        scene.remove(window.selectedObject);
+    }
+
+    window.selectedObject = null;
+
+    updateObjectList();
+
+}
+
+function duplicateSelected() {
+
+    const object = window.selectedObject;
+
+    if (!object || !window.modelTools) return;
+
+    if (modelTools.duplicateSelected) {
+        modelTools.duplicateSelected();
+    }
+
+    updateObjectList();
+
+}
+
+
+/* =====================================
+   MODI
+===================================== */
+
+function setObjectMode() {
+
+    if (window.viewportEngine) {
         viewportEngine.setObjectMode();
     }
 
-    if (mode === "sculpt") {
-        viewportEngine.setSculptMode(true);
-    }
+    setActiveButton("objectModeButton");
 
-    if (mode === "paint") {
-        viewportEngine.setPaintMode(true);
-    }
-
-    document.getElementById("footerStatus").textContent =
-        "Modus: " + mode;
 }
 
-// ==========================================
-// TRANSFORM AUSWAHL
-// ==========================================
+function setSculptMode() {
 
-function setTransform(type) {
-
-    if (!selectedObject) return;
-
-    if (type === "move") {
-        document.getElementById("footerStatus").textContent =
-            "Verschieben – Eigenschaften rechts bearbeiten";
+    if (window.viewportEngine) {
+        viewportEngine.setSculptMode();
     }
 
-    if (type === "rotate") {
-        document.getElementById("footerStatus").textContent =
-            "Drehen – Eigenschaften rechts bearbeiten";
-    }
+    setActiveButton("sculptModeButton");
 
-    if (type === "scale") {
-        document.getElementById("footerStatus").textContent =
-            "Skalieren – Eigenschaften rechts bearbeiten";
-    }
 }
 
-// ==========================================
-// PANEL
-// ==========================================
+function setPaintMode() {
 
-function showPanel(panel) {
-    console.log("Panel:", panel);
+    if (window.viewportEngine) {
+        viewportEngine.setPaintMode();
+    }
+
+    setActiveButton("paintModeButton");
+
 }
 
-// ==========================================
-// AUSWAHL AKTUALISIEREN
-// ==========================================
+function setActiveButton(id) {
 
-const originalSelect = viewportEngine.selectObject;
+    document.querySelectorAll(".tool-button").forEach(button => {
+        button.classList.remove("active");
+    });
 
-viewportEngine.selectObject = function(object) {
+    document.getElementById(id).classList.add("active");
 
-    const result = originalSelect.call(this, object);
+}
 
-    updateProperties();
-    updateObjectList();
 
-    return result;
-};
+/* =====================================
+   ANSICHT
+===================================== */
 
-// ==========================================
-// LÖSCHEN / DUPLIZIEREN
-// ==========================================
+function focusSelectedObject() {
 
-const originalDelete = modelTools.deleteSelected;
+    if (window.viewportEngine) {
+        viewportEngine.focusSelected();
+    }
 
-modelTools.deleteSelected = function() {
+}
 
-    const result = originalDelete.call(this);
 
-    updateObjectList();
+/* =====================================
+   AUSWAHL AKTUALISIEREN
+===================================== */
 
-    return result;
-};
+window.updateObjectList = updateObjectList;
+window.updateProperties = updateProperties;
 
 </script>
 
