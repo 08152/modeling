@@ -1,0 +1,943 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Blender</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #202126;
+    color: #eeeeee;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+
+button, input, select {
+    background: #383b43;
+    color: white;
+    border: 1px solid #51545e;
+    border-radius: 4px;
+    padding: 7px;
+}
+
+button {
+    cursor: pointer;
+    transition: .15s;
+}
+
+button:hover {
+    background: #555a65;
+}
+
+button.active {
+    background: #d8782e;
+    border-color: #f59a50;
+}
+
+#app {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 45px 42px 1fr 25px;
+}
+
+/* TOPBAR */
+
+#topbar {
+    background: #303239;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 12px;
+    border-bottom: 1px solid #151619;
+}
+
+.logo {
+    font-weight: bold;
+    color: #ff9845;
+    font-size: 18px;
+    margin-right: 15px;
+}
+
+.menu {
+    position: relative;
+}
+
+.menu button {
+    border: none;
+    background: transparent;
+}
+
+/* TOOLBAR */
+
+#toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: #292b31;
+    border-bottom: 1px solid #111;
+}
+
+.separator {
+    height: 25px;
+    width: 1px;
+    background: #555;
+    margin: 0 5px;
+}
+
+/* MAIN */
+
+#main {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 190px 1fr 260px;
+}
+
+/* LEFT PANEL */
+
+#left {
+    background: #292b31;
+    padding: 10px;
+    overflow-y: auto;
+    border-right: 1px solid #111;
+}
+
+.panel-title {
+    font-size: 12px;
+    color: #ff9845;
+    font-weight: bold;
+    margin: 12px 0 8px;
+    text-transform: uppercase;
+}
+
+.full {
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.grid-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+}
+
+/* VIEWPORT */
+
+#viewport {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    background: #202126;
+}
+
+#viewport canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#viewinfo {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #16171bcc;
+    padding: 8px;
+    border-radius: 5px;
+    pointer-events: none;
+    color: #ccc;
+    font-size: 12px;
+}
+
+#viewmode {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    display: flex;
+    gap: 5px;
+}
+
+/* RIGHT PANEL */
+
+#right {
+    background: #292b31;
+    border-left: 1px solid #111;
+    overflow-y: auto;
+    padding: 12px;
+}
+
+.section {
+    border-bottom: 1px solid #41434a;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+}
+
+label {
+    display: block;
+    font-size: 12px;
+    color: #bbb;
+    margin: 8px 0 4px;
+}
+
+input[type="range"] {
+    width: 100%;
+    padding: 0;
+}
+
+input[type="number"] {
+    width: 100%;
+}
+
+input[type="color"] {
+    width: 100%;
+    height: 35px;
+    padding: 2px;
+}
+
+select {
+    width: 100%;
+}
+
+.tool-row {
+    display: flex;
+    gap: 5px;
+}
+
+.tool-row button {
+    flex: 1;
+}
+
+#objectList {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.object-item {
+    padding: 8px;
+    background: #393c44;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.object-item.selected {
+    background: #a85d29;
+}
+
+/* FOOTER */
+
+#footer {
+    background: #303239;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-size: 11px;
+    color: #aaa;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@media(max-width: 850px) {
+    #main {
+        grid-template-columns: 145px 1fr;
+    }
+
+    #right {
+        display: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<!-- ===================================== -->
+<!-- TOPBAR -->
+<!-- ===================================== -->
+
+<header id="topbar">
+
+    <div class="logo">MINI BLENDER</div>
+
+    <div class="menu">
+        <button onclick="showPanel('objects')">Datei</button>
+    </div>
+
+    <div class="menu">
+        <button onclick="showPanel('objects')">Objekt</button>
+    </div>
+
+    <div class="menu">
+        <button onclick="setMode('object')">Modus</button>
+    </div>
+
+    <div class="menu">
+        <button onclick="exportGLB()">Export GLB</button>
+    </div>
+
+    <div class="menu">
+        <button onclick="exportGLTF()">Export GLTF</button>
+    </div>
+
+    <span style="flex:1"></span>
+
+    <span id="status">Bereit</span>
+
+</header>
+
+<!-- ===================================== -->
+<!-- TOOLBAR -->
+<!-- ===================================== -->
+
+<div id="toolbar">
+
+    <button onclick="addCube()">＋ Würfel</button>
+    <button onclick="addSphere()">＋ Kugel</button>
+    <button onclick="addCylinder()">＋ Zylinder</button>
+
+    <div class="separator"></div>
+
+    <button onclick="setTransform('move')">Verschieben</button>
+    <button onclick="setTransform('rotate')">Drehen</button>
+    <button onclick="setTransform('scale')">Skalieren</button>
+
+    <div class="separator"></div>
+
+    <button onclick="setMode('object')" id="modeObject" class="active">Objekt</button>
+    <button onclick="setMode('sculpt')" id="modeSculpt">Sculpt</button>
+    <button onclick="setMode('paint')" id="modePaint">Malen</button>
+
+    <div class="separator"></div>
+
+    <button onclick="duplicateObject()">Duplizieren</button>
+    <button onclick="deleteObject()">Löschen</button>
+
+</div>
+
+<!-- ===================================== -->
+<!-- MAIN -->
+<!-- ===================================== -->
+
+<div id="main">
+
+<!-- ===================================== -->
+<!-- LEFT PANEL -->
+<!-- ===================================== -->
+
+<aside id="left">
+
+    <div class="panel-title">Objekte erstellen</div>
+
+    <div class="grid-buttons">
+        <button onclick="addCube()">Würfel</button>
+        <button onclick="addSphere()">Kugel</button>
+        <button onclick="addCylinder()">Zylinder</button>
+        <button onclick="addPlane()">Ebene</button>
+    </div>
+
+    <div class="panel-title">Modellieren</div>
+
+    <button class="full" onclick="setTransform('move')">↔ Verschieben</button>
+    <button class="full" onclick="setTransform('rotate')">⟳ Drehen</button>
+    <button class="full" onclick="setTransform('scale')">⤢ Skalieren</button>
+
+    <div class="panel-title">Sculpting</div>
+
+    <button class="full" onclick="setMode('sculpt')">Sculpt-Modus starten</button>
+
+    <div class="panel-title">Texture Paint</div>
+
+    <button class="full" onclick="setMode('paint')">Malmodus starten</button>
+
+    <div class="panel-title">Objekte</div>
+
+    <div id="objectList"></div>
+
+</aside>
+
+<!-- ===================================== -->
+<!-- VIEWPORT -->
+<!-- ===================================== -->
+
+<main id="viewport">
+
+    <div id="viewinfo">
+        MINI BLENDER 3D VIEWPORT<br>
+        Linke Maustaste: Auswählen<br>
+        Mausrad: Zoomen<br>
+        Rechte Maustaste: Kamera drehen
+    </div>
+
+    <div id="viewmode">
+        <button onclick="focusSelectedObject()">Ansicht auf Auswahl</button>
+    </div>
+
+</main>
+
+<!-- ===================================== -->
+<!-- RIGHT PANEL -->
+<!-- ===================================== -->
+
+<aside id="right">
+
+    <!-- OBJECT PROPERTIES -->
+
+    <div id="objectPanel">
+
+        <div class="panel-title">Objekteigenschaften</div>
+
+        <label>Objektname</label>
+        <input id="objectName" type="text" placeholder="Objektname"
+        onchange="renameSelected(this.value)">
+
+        <div class="section">
+
+            <div class="panel-title">Position</div>
+
+            <label>X</label>
+            <input type="number" id="posX" value="0" step="0.1"
+            onchange="updateTransform()">
+
+            <label>Y</label>
+            <input type="number" id="posY" value="0" step="0.1"
+            onchange="updateTransform()">
+
+            <label>Z</label>
+            <input type="number" id="posZ" value="0" step="0.1"
+            onchange="updateTransform()">
+
+        </div>
+
+        <div class="section">
+
+            <div class="panel-title">Rotation (Grad)</div>
+
+            <label>X</label>
+            <input type="number" id="rotX" value="0"
+            onchange="updateTransform()">
+
+            <label>Y</label>
+            <input type="number" id="rotY" value="0"
+            onchange="updateTransform()">
+
+            <label>Z</label>
+            <input type="number" id="rotZ" value="0"
+            onchange="updateTransform()">
+
+        </div>
+
+        <div class="section">
+
+            <div class="panel-title">Skalierung</div>
+
+            <label>X</label>
+            <input type="number" id="scaleX" value="1" step="0.1"
+            onchange="updateTransform()">
+
+            <label>Y</label>
+            <input type="number" id="scaleY" value="1" step="0.1"
+            onchange="updateTransform()">
+
+            <label>Z</label>
+            <input type="number" id="scaleZ" value="1" step="0.1"
+            onchange="updateTransform()">
+
+            <button class="full" onclick="resetTransform()">Zurücksetzen</button>
+
+        </div>
+
+        <div class="section">
+
+            <div class="panel-title">Farbe</div>
+
+            <input type="color" id="objectColor" value="#999999"
+            onchange="changeObjectColor(this.value)">
+
+        </div>
+
+    </div>
+
+    <!-- SCULPT PANEL -->
+
+    <div id="sculptPanel" class="hidden">
+
+        <div class="panel-title">Sculpting</div>
+
+        <label>Pinselart</label>
+
+        <select id="sculptBrush" onchange="sculptTools.setBrush(this.value)">
+            <option value="DRAW">Draw – Aufbauen</option>
+            <option value="DRAW_SHARP">Draw Sharp</option>
+            <option value="CLAY">Clay – Ton</option>
+            <option value="CLAY_STRIPS">Clay Strips</option>
+            <option value="INFLATE">Inflate – Aufblähen</option>
+            <option value="DEFLATE">Deflate – Eindrücken</option>
+            <option value="SMOOTH">Smooth – Glätten</option>
+            <option value="FLATTEN">Flatten – Abflachen</option>
+            <option value="PINCH">Pinch – Zusammenziehen</option>
+            <option value="GRAB">Grab – Verschieben</option>
+            <option value="CREASE">Crease – Furchen</option>
+            <option value="BLOB">Blob</option>
+            <option value="SCRAPE">Scrape – Abschaben</option>
+            <option value="LAYER">Layer – Schichten</option>
+            <option value="FILL">Fill – Auffüllen</option>
+        </select>
+
+        <label>Pinselgröße</label>
+        <input type="range" min="0.02" max="2" step="0.01"
+        value="0.35" oninput="sculptTools.setRadius(this.value)">
+
+        <label>Pinselstärke</label>
+        <input type="range" min="0" max="1" step="0.01"
+        value="0.35" oninput="sculptTools.setStrength(this.value)">
+
+        <label>Glättungsstärke</label>
+        <input type="range" min="0" max="1" step="0.01"
+        value="0.5" oninput="sculptTools.settings.smoothStrength=Number(this.value)">
+
+        <label>Pinselabstand</label>
+        <input type="range" min="0.01" max="1" step="0.01"
+        value="0.15" oninput="sculptTools.setSpacing(this.value)">
+
+        <label>Druck</label>
+        <input type="range" min="0" max="1" step="0.01"
+        value="1" oninput="sculptTools.setPressure(this.value)">
+
+        <div class="section">
+
+            <div class="panel-title">Symmetrie</div>
+
+            <label><input type="checkbox"
+            onchange="sculptTools.setSymmetry('x',this.checked)"> X</label>
+
+            <label><input type="checkbox"
+            onchange="sculptTools.setSymmetry('y',this.checked)"> Y</label>
+
+            <label><input type="checkbox"
+            onchange="sculptTools.setSymmetry('z',this.checked)"> Z</label>
+
+        </div>
+
+        <button class="full" onclick="sculptTools.settings.invert=!sculptTools.settings.invert">
+            Aufbauen / Abtragen umschalten
+        </button>
+
+    </div>
+
+    <!-- PAINT PANEL -->
+
+    <div id="paintPanel" class="hidden">
+
+        <div class="panel-title">Texture Painting</div>
+
+        <label>Pinselart</label>
+
+        <select id="paintBrush" onchange="paintTools.setBrush(this.value)">
+            <option value="BRUSH">Normaler Pinsel</option>
+            <option value="SOFT">Weicher Pinsel</option>
+            <option value="HARD">Harter Pinsel</option>
+            <option value="AIRBRUSH">Airbrush</option>
+            <option value="SPRAY">Sprühdose</option>
+            <option value="ERASER">Radiergummi</option>
+            <option value="BLUR">Weichzeichner</option>
+            <option value="PIXEL">Pixelpinsel</option>
+            <option value="MARKER">Marker</option>
+            <option value="FILL">Fülleimer</option>
+        </select>
+
+        <label>Farbe</label>
+        <input type="color" value="#ff6600"
+        onchange="paintTools.setColor(this.value)">
+
+        <label>Pinselgröße</label>
+        <input type="range" min="1" max="150" value="24"
+        oninput="paintTools.setSize(this.value)">
+
+        <label>Stärke</label>
+        <input type="range" min="0" max="1" step="0.01" value="1"
+        oninput="paintTools.setStrength(this.value)">
+
+        <label>Härte</label>
+        <input type="range" min="0" max="1" step="0.01" value="0.7"
+        oninput="paintTools.setHardness(this.value)">
+
+        <label>Deckkraft</label>
+        <input type="range" min="0" max="1" step="0.01" value="1"
+        oninput="paintTools.setOpacity(this.value)">
+
+        <div class="section">
+
+            <div class="panel-title">Textur</div>
+
+            <button class="full" onclick="
+                if(selectedObject) paintTools.createTexture(selectedObject);
+            ">Neue Textur erstellen</button>
+
+            <button class="full" onclick="paintTools.exportTexture()">
+                PNG exportieren
+            </button>
+
+            <button class="full" onclick="paintTools.clearTexture()">
+                Textur leeren
+            </button>
+
+        </div>
+
+    </div>
+
+</aside>
+
+</div>
+
+<!-- FOOTER -->
+
+<footer id="footer">
+    <span>Mini Blender 1.0</span>
+    <span id="footerStatus">3D Engine wird gestartet...</span>
+</footer>
+
+</div>
+
+<!-- ===================================== -->
+<!-- THREE.JS -->
+<!-- ===================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.159.0/examples/js/controls/OrbitControls.js"></script>
+
+<!-- ===================================== -->
+<!-- MODULE -->
+<!-- ===================================== -->
+
+<script src="modelieren.js"></script>
+<script src="malen.js"></script>
+<script src="farbe.js"></script>
+<script src="export.js"></script>
+<script src="3-D.js"></script>
+<script src="verbindung.js"></script>
+
+<!-- ===================================== -->
+<!-- APP -->
+<!-- ===================================== -->
+
+<script>
+
+// ==========================================
+// START
+// ==========================================
+
+window.addEventListener("load", () => {
+
+    try {
+
+        start3D();
+
+        connectMiniBlender();
+
+        setTimeout(updateObjectList, 100);
+
+        document.getElementById("status").textContent = "Bereit";
+        document.getElementById("footerStatus").textContent =
+            "Mini Blender gestartet";
+
+    } catch(error) {
+
+        console.error(error);
+
+        document.getElementById("status").textContent =
+            "Fehler beim Start";
+
+        document.getElementById("footerStatus").textContent =
+            error.message;
+    }
+
+});
+
+// ==========================================
+// OBJEKTE
+// ==========================================
+
+function addCube() {
+    modelTools.addCube();
+    updateObjectList();
+    updateProperties();
+}
+
+function addSphere() {
+    modelTools.addSphere();
+    updateObjectList();
+    updateProperties();
+}
+
+function addCylinder() {
+    modelTools.addCylinder();
+    updateObjectList();
+    updateProperties();
+}
+
+function addPlane() {
+    modelTools.addPlane();
+    updateObjectList();
+    updateProperties();
+}
+
+// ==========================================
+// OBJEKTLISTE
+// ==========================================
+
+function updateObjectList() {
+
+    if (!window.scene) return;
+
+    const list = document.getElementById("objectList");
+
+    list.innerHTML = "";
+
+    scene.children.forEach(object => {
+
+        if (!object.userData.isModelObject) return;
+
+        const item = document.createElement("div");
+
+        item.className = "object-item";
+
+        if (object === selectedObject) {
+            item.classList.add("selected");
+        }
+
+        item.textContent = "◈ " + object.name;
+
+        item.onclick = () => {
+
+            viewportEngine.selectObject(object);
+
+            updateProperties();
+            updateObjectList();
+
+        };
+
+        list.appendChild(item);
+
+    });
+}
+
+// ==========================================
+// EIGENSCHAFTEN
+// ==========================================
+
+function updateProperties() {
+
+    const object = selectedObject;
+
+    if (!object) return;
+
+    document.getElementById("objectName").value = object.name;
+
+    document.getElementById("posX").value = object.position.x.toFixed(3);
+    document.getElementById("posY").value = object.position.y.toFixed(3);
+    document.getElementById("posZ").value = object.position.z.toFixed(3);
+
+    document.getElementById("rotX").value =
+        THREE.MathUtils.radToDeg(object.rotation.x).toFixed(1);
+
+    document.getElementById("rotY").value =
+        THREE.MathUtils.radToDeg(object.rotation.y).toFixed(1);
+
+    document.getElementById("rotZ").value =
+        THREE.MathUtils.radToDeg(object.rotation.z).toFixed(1);
+
+    document.getElementById("scaleX").value = object.scale.x.toFixed(3);
+    document.getElementById("scaleY").value = object.scale.y.toFixed(3);
+    document.getElementById("scaleZ").value = object.scale.z.toFixed(3);
+
+    const material = Array.isArray(object.material)
+        ? object.material[0]
+        : object.material;
+
+    if (material && material.color) {
+        document.getElementById("objectColor").value =
+            "#" + material.color.getHexString();
+    }
+}
+
+// ==========================================
+// TRANSFORM
+// ==========================================
+
+function updateTransform() {
+
+    if (!selectedObject) return;
+
+    modelTools.move(
+        Number(posX.value),
+        Number(posY.value),
+        Number(posZ.value)
+    );
+
+    modelTools.rotate(
+        Number(rotX.value),
+        Number(rotY.value),
+        Number(rotZ.value)
+    );
+
+    modelTools.scale(
+        Number(scaleX.value),
+        Number(scaleY.value),
+        Number(scaleZ.value)
+    );
+
+    viewportEngine.updateSelectionHelper();
+}
+
+function resetTransform() {
+
+    if (!selectedObject) return;
+
+    selectedObject.position.set(0, 0.5, 0);
+    selectedObject.rotation.set(0, 0, 0);
+    selectedObject.scale.set(1, 1, 1);
+
+    updateProperties();
+    viewportEngine.updateSelectionHelper();
+}
+
+function renameSelected(name) {
+
+    if (!selectedObject) return;
+
+    modelTools.rename(name);
+    updateObjectList();
+}
+
+function changeObjectColor(color) {
+    modelTools.setColor(color);
+}
+
+// ==========================================
+// MODI
+// ==========================================
+
+function setMode(mode) {
+
+    document.getElementById("objectPanel").classList.toggle(
+        "hidden", mode !== "object"
+    );
+
+    document.getElementById("sculptPanel").classList.toggle(
+        "hidden", mode !== "sculpt"
+    );
+
+    document.getElementById("paintPanel").classList.toggle(
+        "hidden", mode !== "paint"
+    );
+
+    document.getElementById("modeObject").classList.toggle(
+        "active", mode === "object"
+    );
+
+    document.getElementById("modeSculpt").classList.toggle(
+        "active", mode === "sculpt"
+    );
+
+    document.getElementById("modePaint").classList.toggle(
+        "active", mode === "paint"
+    );
+
+    if (mode === "object") {
+        viewportEngine.setObjectMode();
+    }
+
+    if (mode === "sculpt") {
+        viewportEngine.setSculptMode(true);
+    }
+
+    if (mode === "paint") {
+        viewportEngine.setPaintMode(true);
+    }
+
+    document.getElementById("footerStatus").textContent =
+        "Modus: " + mode;
+}
+
+// ==========================================
+// TRANSFORM AUSWAHL
+// ==========================================
+
+function setTransform(type) {
+
+    if (!selectedObject) return;
+
+    if (type === "move") {
+        document.getElementById("footerStatus").textContent =
+            "Verschieben – Eigenschaften rechts bearbeiten";
+    }
+
+    if (type === "rotate") {
+        document.getElementById("footerStatus").textContent =
+            "Drehen – Eigenschaften rechts bearbeiten";
+    }
+
+    if (type === "scale") {
+        document.getElementById("footerStatus").textContent =
+            "Skalieren – Eigenschaften rechts bearbeiten";
+    }
+}
+
+// ==========================================
+// PANEL
+// ==========================================
+
+function showPanel(panel) {
+    console.log("Panel:", panel);
+}
+
+// ==========================================
+// AUSWAHL AKTUALISIEREN
+// ==========================================
+
+const originalSelect = viewportEngine.selectObject;
+
+viewportEngine.selectObject = function(object) {
+
+    const result = originalSelect.call(this, object);
+
+    updateProperties();
+    updateObjectList();
+
+    return result;
+};
+
+// ==========================================
+// LÖSCHEN / DUPLIZIEREN
+// ==========================================
+
+const originalDelete = modelTools.deleteSelected;
+
+modelTools.deleteSelected = function() {
+
+    const result = originalDelete.call(this);
+
+    updateObjectList();
+
+    return result;
+};
+
+</script>
+
+</body>
+</html>
